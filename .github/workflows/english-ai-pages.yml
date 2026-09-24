@@ -35,6 +35,11 @@ jobs:
         run: python -u ml/build.py
       - name: Verify browser model matches Python
         run: node ml/test_engine.cjs
+      - name: Generate synthetic test commentary
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y espeak-ng ffmpeg
+          python ml/make_test_audio.py
       - name: Install browser test runtime
         run: |
           npm install --no-save --no-audit --no-fund playwright@1.51.1

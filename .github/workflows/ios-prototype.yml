@@ -1,0 +1,31 @@
+name: Build native iPhone prototype
+on:
+  push:
+    branches: [main]
+    paths: ['ios/**', '.github/workflows/ios-prototype.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate Xcode project
+        run: |
+          brew install xcodegen
+          cd ios
+          xcodegen generate
+      - name: Compile native prototype
+        run: xcodebuild -project ios/KoraVibe.xcodeproj -scheme KoraVibe -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath /tmp/koravibe-build CODE_SIGNING_ALLOWED=NO build
+      - name: Save reviewable Xcode project
+        uses: actions/upload-artifact@v4
+        with:
+          name: KoraVibe-Xcode-project
+          path: |
+            ios/KoraVibe.xcodeproj
+            ios/Sources
+            ios/README.md
+            ios/project.yml
+          retention-days: 30
