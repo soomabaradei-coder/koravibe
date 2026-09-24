@@ -183,48 +183,115 @@ struct PitchLines: Shape {
     }
 }
 
+struct EventControl: View {
+    let event: MatchEvent
+    let action: () -> Void
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 6) {
+                Image(systemName: event.symbol)
+                    .font(.system(size: 27))
+                    .foregroundStyle(event.color)
+                    .frame(width: 48, height: 48)
+                    .background(background)
+                    .clipShape(RoundedRectangle(cornerRadius: 13))
+                Text(event.title)
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(.white)
+            }.frame(width: 110, height: 74)
+        }.buttonStyle(.plain)
+            .accessibilityLabel("Test \(event.title) vibration")
+    }
+}
+
+struct ListenControl: View {
+    @ObservedObject var model: StadiumModel
+    private var label: String { model.requestingMic ? "CANCEL" : model.listening ? "STOP" : "LISTEN" }
+    var body: some View {
+        Button { model.toggleListening() } label: {
+            VStack(spacing: 5) {
+                Image(systemName: model.listening ? "stop.fill" : "mic.fill").font(.title2)
+                Text(label).font(.system(size: 9, weight: .bold))
+            }.frame(width: 80, height: 80)
+                .background(lime).foregroundStyle(background).clipShape(Circle())
+        }
+    }
+}
+
+struct StadiumPitch: View {
+    @ObservedObject var model: StadiumModel
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack {
+                RoundedRectangle(cornerRadius: 55)
+                    .fill(Color(red: 0.10, green: 0.31, blue: 0.20))
+                PitchLines().stroke(.white.opacity(0.35), lineWidth: 1).padding(10)
+                ForEach(MatchEvent.all) { event in
+                    EventControl(event: event) { model.play(event) }
+                        .position(x: geometry.size.width * CGFloat(event.x), y: geometry.size.height * CGFloat(event.y))
+                }
+                ListenControl(model: model)
+                    .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
+            }
+        }.frame(height: 460)
+    }
+}
+
+struct MomentPanel: View {
+    @ObservedObject var model: StadiumModel
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(model.selected?.title ?? "Feel the difference").font(.title2)
+            Text(model.message).font(.footnote).foregroundStyle(.secondary)
+            ProgressView(value: Double(model.level)).tint(lime).accessibilityLabel("Live sound level")
+        }.padding().background(Color.white.opacity(0.06)).clipShape(RoundedRectangle(cornerRadius: 16))
+    }
+}
+
+struct PrototypeControls: View {
+    @ObservedObject var model: StadiumModel
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Button("Test vibration · two long pulses") { model.testHaptics() }
+                .buttonStyle(.borderedProminent).tint(lime).foregroundStyle(background)
+            Button("Play English test commentary") { model.playTestSound() }
+                .buttonStyle(.bordered).tint(lime)
+            Button("Stop sound and vibration") { model.stopAll() }
+                .buttonStyle(.bordered).tint(lime)
+            Text("Events are manually simulated. Listen measures ambient sound level; automatic football event recognition is not connected. Play test commentary from a second device when testing the microphone.")
+                .font(.footnote).foregroundStyle(.secondary)
+            if !model.hapticsSupported {
+                Text("Physical haptics require a supported iPhone. They cannot be felt in the Simulator.")
+                    .font(.footnote).foregroundStyle(.orange)
+            }
+            Text("FEEL THE GAME. BELONG TO THE MOMENT.").font(.caption2).foregroundStyle(lime)
+        }
+    }
+}
+
 struct StadiumView: View {
     @StateObject private var model = StadiumModel()
     @Environment(\.scenePhase) private var scenePhase
+    private var header: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            HStack {
+                Text("KoraVibe.").font(.title2.bold())
+                Spacer()
+                Text("iPHONE PROTOTYPE").font(.caption2).foregroundStyle(lime)
+            }
+            Text("Every moment.\nFeel it.")
+                .font(.system(size: 44, weight: .medium, design: .rounded)).foregroundStyle(lime)
+            Text("Five events. Five distinct pulses.").foregroundStyle(.secondary)
+            Text(model.status).font(.caption2.bold()).foregroundStyle(lime)
+        }
+    }
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                HStack { Text("KoraVibe.").font(.title2.bold()); Spacer(); Text("iPHONE PROTOTYPE").font(.caption2).foregroundStyle(lime) }
-                Text("Every moment.\nFeel it.").font(.system(size: 44, weight: .medium, design: .rounded)).foregroundStyle(lime)
-                Text("Five events. Five distinct pulses.").foregroundStyle(.secondary)
-                Text(model.status).font(.caption2.bold()).foregroundStyle(lime)
-                GeometryReader { geometry in
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 55).fill(Color(red: 0.10, green: 0.31, blue: 0.20))
-                        PitchLines().stroke(.white.opacity(0.35), lineWidth: 1).padding(10)
-                        ForEach(MatchEvent.all) { event in
-                            Button { model.play(event) } label: {
-                                VStack(spacing: 6) {
-                                    Image(systemName: event.symbol).font(.system(size: 27)).foregroundStyle(event.color).frame(width: 48, height: 48).background(background).clipShape(RoundedRectangle(cornerRadius: 13))
-                                    Text(event.title).font(.system(size: 11, weight: .semibold)).foregroundStyle(.white)
-                                }.frame(width: 110, height: 74)
-                            }.buttonStyle(.plain).accessibilityLabel("Test \(event.title) vibration")
-                                .position(x: geometry.size.width * event.x, y: geometry.size.height * event.y)
-                        }
-                        Button { model.toggleListening() } label: {
-                            VStack(spacing: 5) {
-                                Image(systemName: model.listening ? "stop.fill" : "mic.fill").font(.title2)
-                                Text(model.requestingMic ? "CANCEL" : model.listening ? "STOP" : "LISTEN").font(.system(size: 9, weight: .bold))
-                            }.frame(width: 80, height: 80).background(lime).foregroundStyle(background).clipShape(Circle())
-                        }.position(x: geometry.size.width / 2, y: geometry.size.height / 2)
-                    }
-                }.frame(height: 460)
-                VStack(alignment: .leading, spacing: 10) {
-                    Text(model.selected?.title ?? "Feel the difference").font(.title2)
-                    Text(model.message).font(.footnote).foregroundStyle(.secondary)
-                    ProgressView(value: Double(model.level)).tint(lime).accessibilityLabel("Live sound level")
-                }.padding().background(Color.white.opacity(0.06)).clipShape(RoundedRectangle(cornerRadius: 16))
-                Button("Test vibration · two long pulses") { model.testHaptics() }.buttonStyle(.borderedProminent).tint(lime).foregroundStyle(background)
-                Button("Play English test commentary") { model.playTestSound() }.buttonStyle(.bordered).tint(lime)
-                Button("Stop sound and vibration") { model.stopAll() }.buttonStyle(.bordered).tint(lime)
-                Text("Events are manually simulated. Listen measures ambient sound level; automatic football event recognition is not connected. Play test commentary from a second device when testing the microphone.").font(.footnote).foregroundStyle(.secondary)
-                if !model.hapticsSupported { Text("Physical haptics require a supported iPhone. They cannot be felt in the Simulator.").font(.footnote).foregroundStyle(.orange) }
-                Text("FEEL THE GAME. BELONG TO THE MOMENT.").font(.caption2).foregroundStyle(lime)
+                header
+                StadiumPitch(model: model)
+                MomentPanel(model: model)
+                PrototypeControls(model: model)
             }.padding(22)
         }.background(background).foregroundStyle(.white).preferredColorScheme(.dark)
             .onChange(of: scenePhase) { phase in if phase != .active { model.stopAll() } }
