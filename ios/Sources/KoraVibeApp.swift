@@ -3,7 +3,7 @@ import AVFoundation
 import CoreHaptics
 
 private let lime = Color(red: 0.86, green: 0.97, blue: 0.58)
-private let background = Color(red: 0.03, green: 0.10, blue: 0.07)
+private let stadiumBackground = Color(red: 0.03, green: 0.10, blue: 0.07)
 
 struct MatchEvent: Identifiable {
     let id: String
@@ -193,7 +193,7 @@ struct EventControl: View {
                     .font(.system(size: 27))
                     .foregroundStyle(event.color)
                     .frame(width: 48, height: 48)
-                    .background(background)
+                    .background(stadiumBackground)
                     .clipShape(RoundedRectangle(cornerRadius: 13))
                 Text(event.title)
                     .font(.system(size: 11, weight: .semibold))
@@ -213,7 +213,7 @@ struct ListenControl: View {
                 Image(systemName: model.listening ? "stop.fill" : "mic.fill").font(.title2)
                 Text(label).font(.system(size: 9, weight: .bold))
             }.frame(width: 80, height: 80)
-                .background(lime).foregroundStyle(background).clipShape(Circle())
+                .background(lime).foregroundStyle(stadiumBackground).clipShape(Circle())
         }
     }
 }
@@ -253,7 +253,7 @@ struct PrototypeControls: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Button("Test vibration · two long pulses") { model.testHaptics() }
-                .buttonStyle(.borderedProminent).tint(lime).foregroundStyle(background)
+                .buttonStyle(.borderedProminent).tint(lime).foregroundStyle(stadiumBackground)
             Button("Play English test commentary") { model.playTestSound() }
                 .buttonStyle(.bordered).tint(lime)
             Button("Stop sound and vibration") { model.stopAll() }
@@ -293,7 +293,7 @@ struct StadiumView: View {
                 MomentPanel(model: model)
                 PrototypeControls(model: model)
             }.padding(22)
-        }.background(background).foregroundStyle(.white).preferredColorScheme(.dark)
+        }.background(stadiumBackground).foregroundStyle(.white).preferredColorScheme(.dark)
             .onChange(of: scenePhase) { phase in if phase != .active { model.stopAll() } }
             .onReceive(NotificationCenter.default.publisher(for: AVAudioSession.interruptionNotification)) { _ in model.stopAll() }
     }
