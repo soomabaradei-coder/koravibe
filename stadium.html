@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#081913"><meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="KoraVibe stadium prototype. Explore five football events through touch.">
+<title>KoraVibe · Feel the stadium</title>
+<link rel="stylesheet" href="stadium/style.css">
+</head>
+<body>
+<main class="app">
+ <header><a class="brand" href="stadium.html" aria-label="KoraVibe home"><span class="brand-icon">◖</span>Kora<span>Vibe</span><i></i></a><button id="help" class="icon-button" aria-label="How it works">?</button></header>
+ <div class="eyebrow"><span class="status-dot"></span> THE STADIUM, IN YOUR HAND</div>
+ <h1>Every moment.<br><em>Feel it.</em></h1>
+ <p class="intro">Five events. Five distinct pulses.<br>One shared love of the game.</p>
+ <div class="mode-row"><span class="pill" id="mode">INTERACTIVE DEMO</span><span class="local">↳ Designed for the stands</span></div>
+ <section class="arena" aria-label="Football stadium with five event controls">
+  <div class="stands stands-one"></div><div class="stands stands-two"></div>
+  <div class="floodlight left"></div><div class="floodlight right"></div>
+  <div class="pitch">
+   <svg class="field-lines" viewBox="0 0 300 470" preserveAspectRatio="none" aria-hidden="true"><rect x="10" y="10" width="280" height="450" rx="2"/><path d="M10 235H290 M80 10V78H220V10 M115 10V38H185V10 M80 460V392H220V460 M115 460V432H185V460"/><circle cx="150" cy="235" r="51"/><circle cx="150" cy="235" r="2"/><path d="M116 78Q150 112 184 78 M116 392Q150 358 184 392"/><circle cx="150" cy="63" r="2"/><circle cx="150" cy="407" r="2"/></svg>
+   <div class="goal-net top"></div><div class="goal-net bottom"></div>
+   <button class="event goal" data-event="goal"><span class="event-symbol">⚽</span><span>Goal</span><small>LONG · LONG · LONG</small></button>
+   <button class="event shot" data-event="shot"><span class="event-symbol shot-symbol">◎</span><span>Shot on target</span><small>SHORT · SHORT</small></button>
+   <button id="listen" class="listen" aria-label="Start microphone sound meter" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3M8 22h8"/></svg><span id="listen-label">LISTEN</span></button>
+   <button class="event yellow" data-event="yellow"><span class="event-symbol"><i class="card yellow-card"></i></span><span>Yellow card</span><small>ONE LONG</small></button>
+   <button class="event red" data-event="red"><span class="event-symbol"><i class="card red-card"></i></span><span>Red card</span><small>LONG · LONG</small></button>
+   <button class="event substitution" data-event="substitution"><span class="event-symbol swap">⇄</span><span>Substitution</span><small>SHORT · LONG</small></button>
+  </div>
+  <span class="arena-caption">TAP AN EVENT TO FEEL ITS PATTERN</span>
+ </section>
+ <section class="moment" aria-live="polite" aria-atomic="true"><div class="moment-top"><span id="moment-label">YOUR NEXT MOMENT</span><span id="moment-source">DEMO</span></div><div class="moment-body"><span id="moment-icon">✦</span><div><h2 id="moment-title">Feel the difference</h2><p id="moment-description">Tap any event on the pitch.</p></div></div><div id="pulse-track" class="pulse-track" aria-label="Pulse pattern preview"></div></section>
+ <section class="sound"><div class="sound-heading"><span><i class="status-dot" id="mic-dot"></i> <b id="sound-title">Stadium sound</b></span><span id="sound-state">MIC OFF</span></div><div class="meter" id="meter" aria-hidden="true"></div><p id="sound-description">Tap Listen to see the sound around you.</p></section>
+ <button class="demo-button" id="demo"><span id="demo-icon">▶</span><span id="demo-label">Play the five-event demo</span><span>↗</span></button>
+ <div class="preferences"><button id="haptics" aria-pressed="true"><span id="haptics-dot">●</span> Haptics on</button><span id="device-note">Checking vibration support…</span></div>
+ <p class="honesty">Prototype: event buttons and playback are simulated. The microphone measures sound level only; automatic event recognition is not connected.</p>
+ <section class="history"><div class="section-title"><h2>Moments felt</h2><button id="clear">Clear</button></div><ol id="history"><li class="empty">Your demo moments will appear here.</li></ol></section>
+ <footer>FEEL THE GAME. BELONG TO THE MOMENT.<span>KoraVibe · Abed’s project</span></footer>
+</main>
+<dialog id="help-dialog"><button id="close-help" class="icon-button" aria-label="Close instructions">×</button><div class="eyebrow">WELCOME TO KORAVIBE</div><h2>Your hand.<br>Your stadium.</h2><p>Tap the five pitch controls to learn their pulse patterns, or play the guided demo.</p><p><strong>Listen</strong> uses your microphone to display ambient sound level. Audio stays in this page, is not uploaded, and is not saved. It does not identify football events yet.</p><p>Vibration works only on supported devices and browsers. On other devices, the pulse animation is the preview. Keep this page open while trying it.</p><p>You can save this link to your phone’s Home Screen using your browser’s share or menu options.</p><button id="got-it" class="demo-button">Let’s feel it ↗</button></dialog>
+<script src="stadium/app.js"></script>
+</body></html>

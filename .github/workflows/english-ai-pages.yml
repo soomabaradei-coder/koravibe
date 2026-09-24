@@ -27,6 +27,7 @@ jobs:
           python -m py_compile ml/build.py ml/package_site.py
           node --check ai/engine.js
           node --check ai/app.js
+          node --check stadium/app.js
       - name: Reproduce training and held-out evaluation
         env:
           OPENBLAS_NUM_THREADS: '2'
@@ -43,6 +44,7 @@ jobs:
           python -m http.server 8000 > /tmp/koravibe-server.log 2>&1 &
           for attempt in {1..20}; do curl --fail --silent http://127.0.0.1:8000/ai.html > /dev/null && break; sleep 1; done
           node ml/test_browser.cjs
+          node ml/test_stadium.cjs
       - name: Save model, provenance and test evidence
         if: always()
         uses: actions/upload-artifact@v4
