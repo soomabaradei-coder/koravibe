@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#101a17"><title>KoraVibe — English AI Prototype</title><link rel="stylesheet" href="ai/style.css"><script defer src="ai/engine.js"></script><script defer src="ai/app.js"></script></head>
+<body><div class="shell">
+<header><a href="index.html" class="brand">≋ Kora<span>Vibe</span></a><span class="badge">ENGLISH · RESEARCH PROTOTYPE</span></header>
+<main><div class="intro"><div><p class="eyebrow">FROM COMMENTARY TO TOUCH</p><h1>Feel the moment.</h1><p>Explore how English football commentary becomes an event prediction.</p></div><span class="status" id="model-status" role="status">Loading trained model…</span></div>
+<div class="layout">
+<section class="card"><div class="section-top"><h2>The commentary</h2><span class="step">01 / INPUT</span></div>
+<label for="commentary">Paste a short passage of English match commentary</label>
+<textarea id="commentary" maxlength="2000" placeholder="Paste commentary, or load a real test excerpt below…" spellcheck="false"></textarea>
+<div class="actions"><button id="analyze" class="primary" disabled>Analyze commentary ↗</button><button id="clear">Clear</button></div><p id="input-status" class="small" role="status">Text analysis runs locally after the model loads.</p>
+<div class="divider"></div><h3>Try real match data</h3><p class="small">Random held-out SoccerNet-Echoes excerpts. The timestamp label is approximate; predictions can be wrong.</p>
+<label for="example" class="sr-only">Test excerpt</label><div class="select-row"><select id="example" disabled><option>Loading excerpts…</option></select><button id="load-example" disabled>Load</button></div><p id="example-source" class="small"></p>
+<div class="divider"></div><h3>Listen to English commentary</h3><p class="small">Use your microphone near a commentary source. Your browser may send audio to its speech-recognition service. Only final English transcripts are analyzed.</p>
+<div class="actions"><button id="listen" disabled>Start microphone</button><button id="stop" disabled>Stop</button></div><p id="speech-status" class="small" role="status"></p>
+</section>
+<section class="card"><div class="section-top"><h2>The prediction</h2><span class="step">02 / TOUCH</span></div>
+<div class="phone" id="phone"><div class="notch"></div><p class="phone-label">KoraVibe</p><div class="event-icon" aria-hidden="true">◉</div><p id="event-label">Ready to feel</p><p id="event-detail">Add commentary to begin</p><div class="pulse-bars" aria-hidden="true"><i></i><i></i><i></i></div><span class="phone-foot">PREDICTION · NOT A VERIFIED MATCH FEED</span></div>
+<div id="result-status" class="result-status" role="status">No event analyzed yet.</div><div id="scores"></div>
+<p class="pause">Automatic alerts are paused in this research release.</p><p class="small">The initial model did not meet the validation criterion for reliable event alerts. Displayed scores are not calibrated real-event probabilities.</p>
+<div class="divider"></div><h3>Learn the pulse patterns</h3><p class="small">Manual tests: these buttons do not use AI.</p><div class="patterns"><button data-pattern="goal">Goal <span>▬ ▬ ▰</span></button><button data-pattern="card">Card <span>▪ ▪</span></button><button data-pattern="shot">Shot <span>▪</span></button></div><p class="small" id="haptic-support"></p><p class="small">“Card” combines yellow and red cards in this first model.</p>
+</section></div>
+<section class="evidence card"><div class="section-top"><h2>What this prototype has learned</h2><span class="step">TRANSPARENT RESULTS</span></div><div class="metrics" id="metrics"></div><p class="small">Whole matches were held out for testing. Training uses English ASR/translated transcript windows aligned to event timestamps. These labels have not been manually verified. This model classifies text; browser speech recognition is separate. It does not detect raw crowd sounds or whistles. Physical-phone and accessibility-user testing remain outstanding.</p><p class="small"><a href="ml/reports/metrics.json">Full evaluation</a> · <a href="ml/README.md">Methods & sources</a> · <a href="https://huggingface.co/datasets/SoccerNet/SN-echoes">SoccerNet-Echoes</a></p></section>
+</main><footer>One game. More ways to feel it.<span>Built for Abed’s KoraVibe project.</span></footer>
+</div></body></html>

@@ -1,0 +1,75 @@
+name: Train, test and publish English AI
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: english-ai-pages
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install training dependencies
+        run: pip install -r ml/requirements.txt
+      - name: Check source syntax
+        run: |
+          python -m py_compile ml/build.py ml/package_site.py
+          node --check ai/engine.js
+          node --check ai/app.js
+      - name: Reproduce training and held-out evaluation
+        env:
+          OPENBLAS_NUM_THREADS: '2'
+          OMP_NUM_THREADS: '2'
+        run: python -u ml/build.py
+      - name: Verify browser model matches Python
+        run: node ml/test_engine.cjs
+      - name: Install browser test runtime
+        run: |
+          npm install --no-save --no-audit --no-fund playwright@1.51.1
+          npx playwright install --with-deps chromium
+      - name: Test the English interface
+        run: |
+          python -m http.server 8000 > /tmp/koravibe-server.log 2>&1 &
+          for attempt in {1..20}; do curl --fail --silent http://127.0.0.1:8000/ai.html > /dev/null && break; sleep 1; done
+          node ml/test_browser.cjs
+      - name: Save model, provenance and test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: koravibe-model-and-evaluation
+          path: |
+            ai/model.json
+            ai/examples.json
+            ml/models/
+            ml/reports/
+            ml/data_manifest.json
+          retention-days: 30
+      - name: Prepare website
+        run: python ml/package_site.py
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publish tested site
+        id: deployment
+        uses: actions/deploy-pages@v4
